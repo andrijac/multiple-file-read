@@ -94,16 +94,16 @@
 	 * @param callback {Function} Callback when all parameters are processed.
 	 */
 	function batchRead(files, eachCallback, callback) {
-        var encoding = 'utf8',
-            params = [];
+		var encoding = 'utf8',
+			params = [];
 
 		// build parameter array
-        files.forEach(function(file) {
-            params.push([file, encoding]);
-        });
+		files.forEach(function(file) {
+			params.push([file, encoding]);
+		});
 
-        batch(fs.readFile, params, eachCallback, callback);
-    }
+		batch(fs.readFile, params, eachCallback, callback);
+	}
 
 	batchRead(filePathList,
 		// callback after each file read
