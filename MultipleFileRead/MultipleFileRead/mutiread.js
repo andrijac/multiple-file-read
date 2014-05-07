@@ -3,29 +3,28 @@
 
 	var fs = require('fs'),
 		readline = require('readline'),
-		filePathList = [], i, ii, rl, toArray;
-	
-	toArray = function () { return Array.prototype.slice.call(arguments[0]); };
-	rl = readline.createInterface({
-        input: process.stdin,
-        output: process.stdout
-    });
+		filePathList = [], i, ii,
+		
+		toArray = function () { return Array.prototype.slice.call(arguments[0]); },
 
-	if (process.argv.length < 3) {
+		rl = readline.createInterface({
+			input: process.stdin,
+			output: process.stdout
+		});
 
-		wl("Usage: node app.js [file paths to read]");
+	// validate call, must contain at least 3 arguments
+	if (process.argv.length < 3) {		
+		wl("Usage: node mutiread.js [file paths to read]");
 		process.exit(0);
-
-	} else {
-
-		for(i = 2, ii = process.argv.length; i<ii;i++) {
-			filePathList.push(getActualFilePath(process.argv[i]));
-		}
-
 	}
 
-	function getActualFilePath(filePath) {		
+	// start from 3rd parameter, add them to filePathList
+	for(i = 2, ii = process.argv.length; i < ii; i++) {
+		filePathList.push(getActualFilePath(process.argv[i]));
+	}
 
+	// check file path
+	function getActualFilePath(filePath) {
 		var relative;
 
 		// check absolute path
@@ -33,9 +32,10 @@
 			return filePath;
 		}
 
-		// check relative path
+		// get absolute path from relative path
 		relative = [__dirname, filePath].join("/");
 
+		// check relative path
 		if(fs.existsSync(relative)) {
 			return relative;
 		}
@@ -50,45 +50,53 @@
 	 * @param callback {Function} Callback when all parameters are processed.
 	 */
 	function batch(execFunc, parameters, eachCallback, callback) {
-
 		var index = -1, cb, iterate, results= [];
 
 		cb = function () {
 			var params = toArray(arguments),
 				isLastItem = index == parameters.length - 1;
 
-			results.push(params);                
-
+			// put results from callback to results list for later processing
+			// results list is passed into final callback function
+			results.push(params);
+			
+			// notify that current call is done
 			eachCallback.apply(null, params);
 
 			if(isLastItem) {
+				// if it is last item in parameter list, call final callback
 				callback(results);
 			} else {
+				// continue iteration through parameters
 				iterate();
 			}
 		};
 
 		iterate = function () {
 			index++;
-			var i = index, result,
+			var i = index,
 				params = parameters[i] || [];
-
+			
+			// 'params' collection was created in 'batchRead' method and it contains all parameters needed to invoke a function
+			// here we are adding last parameter in collection which is callback function 'cb' which is scoped inside parent function			
+			// inside 'cb' function iterate function will be called again until all parameters are not processed.
 			params.push(cb);
 			execFunc.apply(this, params);
 		};
 
+		// first iteration call
 		iterate();
 	};
 
-	/**	 
-	 * @param files {stringp[} File path list.
+	/**
+	 * @param files {string[]} File path list.
 	 * @param eachCallback {Function} Callback after each execution.
 	 * @param callback {Function} Callback when all parameters are processed.
 	 */
 	function batchRead(files, eachCallback, callback) {
         var encoding = 'utf8',
             params = [];
-           
+
 		// build parameter array
         files.forEach(function(file) {
             params.push([file, encoding]);
@@ -97,23 +105,26 @@
         batch(fs.readFile, params, eachCallback, callback);
     }
 
-	batchRead(filePathList, 
+	batchRead(filePathList,
+		// callback after each file read
 		function(err, text) {
 			console.log("File read done. Text: " + text);
 		},
-		function(result) {
 
+		// callback when everything is done
+		function(result) {
 			var insertTextArr = [];
 
 			result.forEach(function(i) {
 				insertTextArr.push(i[1]);
 			});
-			
+
+			console.log("");
 			console.log("All:");
 
 			console.log(insertTextArr.join("\n"));
-
 		});
 
+	// wait in console
 	rl.question("", function () { rl.close(); });
 })();

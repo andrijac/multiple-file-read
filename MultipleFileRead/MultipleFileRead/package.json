@@ -1,10 +1,10 @@
 {
   "name": "MultipleFileRead",
-  "version": "0.0.0",
-  "description": "MultipleFileRead",
-  "main": "app.js",
+  "version": "0.0.1",
+  "description": "Multiple file read",
+  "main": "mutiread.js",
   "author": {
-    "name": "andrijac",
+    "name": "Andrija Cacanovic",
     "email": ""
   }
 }
