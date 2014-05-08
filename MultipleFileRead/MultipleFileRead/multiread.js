@@ -18,7 +18,7 @@
 		process.exit(0);
 	}
 
-	// start from 3rd parameter, add them to filePathList
+	// start from 3rd argument, add them to filePathList
 	for(i = 2, ii = process.argv.length; i < ii; i++) {
 		filePathList.push(getActualFilePath(process.argv[i]));
 	}
@@ -44,30 +44,30 @@
 	}
 
 	/**
-	 * @param execFunc {Function} Function that will be called for each parameter set in @parameters array.
-	 * @param parameters {Object[]} Array where each item is array objects which will be used in each call.
+	 * @param execFunc {Function} Function that will be called for each argument set in @args array.
+	 * @param args {Object[]} Array where each item is array objects which will be used in each call.
 	 * @param eachCallback {Function} Callback after each execution.
-	 * @param callback {Function} Callback when all parameters are processed.
+	 * @param callback {Function} Callback when all arguments are processed.
 	 */
-	function batch(execFunc, parameters, eachCallback, callback) {
+	function batch(execFunc, args, eachCallback, callback) {
 		var index = -1, cb, iterate, results= [];
 
 		cb = function () {
-			var params = toArray(arguments),
-				isLastItem = index == parameters.length - 1;
+			var callResult = toArray(arguments),
+				isLastItem = index == args.length - 1;
 
 			// put results from callback to results list for later processing
 			// results list is passed into final callback function
-			results.push(params);
+			results.push(callResult);
 
 			// notify that current call is done
-			eachCallback.apply(null, params);
+			eachCallback.apply(null, callResult);
 
 			if(isLastItem) {
-				// if it is last item in parameter list, call final callback
+				// if it is last item in args array, call final callback
 				callback(results);
 			} else {
-				// continue iteration through parameters
+				// continue iteration through args
 				iterate();
 			}
 		};
@@ -75,13 +75,13 @@
 		iterate = function () {
 			index++;
 			var i = index,
-				params = parameters[i] || [];
+				argsArray = args[i] || [];
 
-			// 'params' collection was created in 'batchRead' method and it contains all parameters needed to invoke a function
-			// here we are adding last parameter in collection which is callback function 'cb' which is scoped inside parent function
-			// inside 'cb' function iterate function will be called again until all parameters are not processed.
-			params.push(cb);
-			execFunc.apply(this, params);
+			// 'argsArray' collection was created in 'batchRead' method and it contains all arguments needed to invoke a function
+			// here we are adding last argument in collection which is callback function 'cb' which is scoped inside parent function
+			// inside 'cb' function iterate function will be called again until all arguments are not processed.
+			argsArray.push(cb);
+			execFunc.apply(this, argsArray);
 		};
 
 		// first iteration call
@@ -91,18 +91,18 @@
 	/**
 	 * @param files {string[]} File path list.
 	 * @param eachCallback {Function} Callback after each execution.
-	 * @param callback {Function} Callback when all parameters are processed.
+	 * @param callback {Function} Callback when all arguments are processed.
 	 */
 	function batchRead(files, eachCallback, callback) {
 		var encoding = 'utf8',
-			params = [];
+			args = [];
 
-		// build parameter array
+		// build args array
 		files.forEach(function(file) {
-			params.push([file, encoding]);
+			args.push([file, encoding]);
 		});
 
-		batch(fs.readFile, params, eachCallback, callback);
+		batch(fs.readFile, args, eachCallback, callback);
 	}
 
 	batchRead(filePathList,
