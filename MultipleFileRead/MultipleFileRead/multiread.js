@@ -4,7 +4,7 @@
 	var fs = require('fs'),
 		readline = require('readline'),
 		filePathList = [], i, ii,
-		
+
 		toArray = function () { return Array.prototype.slice.call(arguments[0]); },
 
 		rl = readline.createInterface({
@@ -13,8 +13,8 @@
 		});
 
 	// validate call, must contain at least 3 arguments
-	if (process.argv.length < 3) {		
-		wl("Usage: node mutiread.js [file paths to read]");
+	if (process.argv.length < 3) {
+		wl("Usage: node multiread.js [file paths to read]");
 		process.exit(0);
 	}
 
@@ -59,7 +59,7 @@
 			// put results from callback to results list for later processing
 			// results list is passed into final callback function
 			results.push(params);
-			
+
 			// notify that current call is done
 			eachCallback.apply(null, params);
 
@@ -76,9 +76,9 @@
 			index++;
 			var i = index,
 				params = parameters[i] || [];
-			
+
 			// 'params' collection was created in 'batchRead' method and it contains all parameters needed to invoke a function
-			// here we are adding last parameter in collection which is callback function 'cb' which is scoped inside parent function			
+			// here we are adding last parameter in collection which is callback function 'cb' which is scoped inside parent function
 			// inside 'cb' function iterate function will be called again until all parameters are not processed.
 			params.push(cb);
 			execFunc.apply(this, params);
