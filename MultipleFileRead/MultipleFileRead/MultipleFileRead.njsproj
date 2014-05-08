@@ -17,7 +17,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>3896ab97-5be3-4d4e-aba6-9432d7fcf0e0</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>mutiread.js</StartupFile>
+    <StartupFile>multiread.js</StartupFile>
     <StartWebBrowser>False</StartWebBrowser>
     <SearchPath>
     </SearchPath>
@@ -34,7 +34,7 @@
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="mutiread.js" />
+    <Compile Include="multiread.js" />
     <Content Include="package.json" />
     <Content Include="test1.txt" />
     <Content Include="test2.txt" />
